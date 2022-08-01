@@ -22,6 +22,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <llvm/ADT/StringRef.h>
 
 namespace Sandworm
 {

@@ -307,14 +307,14 @@ namespace Sandworm
 
 	public:
 
-		PreprocessorImpl::PreprocessorImpl()
+		PreprocessorImpl()
 			: diagnosticClient(nullptr)
 			, resultContext(nullptr)
 		{
 			Create();
 		}
 
-		PreprocessorImpl::~PreprocessorImpl()
+        ~PreprocessorImpl()
 		{
 			Destroy();
 		}
@@ -327,7 +327,7 @@ namespace Sandworm
 			result.append(fileName);
 		}
 
-		virtual void PreprocessorImpl::AddFile(const char* fileName, const char* fileContent) override
+		virtual void AddFile(const char* fileName, const char* fileContent) override
 		{
 			clang::FileManager & fm = *fileManager.get();
 			clang::SourceManager & sm = *sourceManager.get();
@@ -342,7 +342,7 @@ namespace Sandworm
 			sm.overrideFileContents(virtualFile, std::move(fileData));
 		}
 
-		virtual Result* PreprocessorImpl::DoPreprocess(const char* fileName, const char** pDefines, uint32_t definesCount) override
+		virtual Result* DoPreprocess(const char* fileName, const char** pDefines, uint32_t definesCount) override
 		{
 			clang::SmallString<4096> fullPath;
 			AdjustFileName(fileName, fullPath);
@@ -372,7 +372,6 @@ namespace Sandworm
 
 			clang::PreprocessorOptions& opts = compiler.getPreprocessorOpts();
 			//opts.etailedRecord = false;
-			opts.TokenCache.clear();
 			opts.Macros.clear();
 			opts.UsePredefines = false;
 			opts.ObjCXXARCStandardLibrary = clang::ARCXX_nolib;
@@ -385,15 +384,23 @@ namespace Sandworm
 			diagnosticClient->ResetErrorsCounter();
 
 			compiler.getSourceManager().clearIDTables();
-			clang::FrontendInputFile infile(fullPath.c_str(), clang::InputKind(clang::InputKind::C));
+			clang::FrontendInputFile infile(fullPath.c_str(), clang::InputKind(clang::Language::C));
 			compiler.InitializeSourceManager(infile);
 
 			/////////////////////////////////////////////////////////////////////////////////////////////////
 			clang::FileID mainId = sourceManager->getMainFileID();
 
+
+
+
 			bool inv = false;
-			llvm::MemoryBuffer* fileBuffer = sourceManager->getBuffer(mainId, &inv);
-			const char* srctxt = fileBuffer->getBufferStart();
+			llvm::StringRef data = sourceManager->getBufferData(mainId, &inv);
+
+
+
+			const char* srctxt = data.data();
+
+            printf("%s\n\n",srctxt);
 			/////////////////////////////////////////////////////////////////////////////////////////////////
 
 			compiler.createPreprocessor(clang::TU_Complete);

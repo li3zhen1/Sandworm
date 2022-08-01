@@ -24,7 +24,7 @@
 #include <fstream>
 #include <streambuf>
 #include <memory>
-
+#include <iostream>
 // GetFileVersionInfoSize and GetFileVersionInfo from clang
 #pragma comment( lib, "version.lib" )
 
@@ -41,6 +41,8 @@ int main(/*int argc, char *argv[]*/)
 {
 	const char* hlslName = "shader.hlsl";
 	std::string hlsl = ReadFileToString(hlslName);
+
+    std::cout << hlsl << std::endl;
 
 	const char* headerName = "shader.inc";
 	std::string header = ReadFileToString(headerName);
